@@ -1,40 +1,75 @@
 package saga.ticex_annihilation.modifier;
 
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.Nullable;
 import slimeknights.tconstruct.library.modifiers.Modifier;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.hook.interaction.InventoryTickModifierHook;
+import slimeknights.tconstruct.library.module.ModuleHookMap;
+import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
 import java.util.List;
 
-public class HighMegaLinkModifier extends Modifier {
-    public void projectileTick(IToolStackView tool, ModifierEntry modifier, Projectile projectile, @Nullable Entity shooter, @Nullable Entity target) {
-        // 壁をすり抜ける設定（物理演算を無視）
+/**
+ * ハイメガ・リンク Modifier
+ * PROJECTILE_TICK が存在しない環境のため、INVENTORY_TICK から弾丸を制御する
+ */
+public class HighMegaLinkModifier extends Modifier implements InventoryTickModifierHook {
+
+    @Override
+    protected void registerHooks(ModuleHookMap.Builder builder) {
+        super.registerHooks(builder);
+        // あなたのソースにある INVENTORY_TICK を使用
+        builder.addHook(this, ModifierHooks.INVENTORY_TICK);
+    }
+
+    @Override
+    public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level level, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+        // サーバーサイドかつ、手に持っている時のみ実行
+        if (level.isClientSide || !isSelected) return;
+
+        // 1. 周囲 128 マスにある自分の放った弾丸（Projectile）を探す
+        AABB searchArea = holder.getBoundingBox().inflate(128);
+        List<Projectile> myProjectiles = level.getEntitiesOfClass(Projectile.class, searchArea, p -> p.getOwner() == holder);
+
+        for (Projectile projectile : myProjectiles) {
+            // ハイメガのメインロジックを実行
+            applyHighMegaEffect(tool, modifier, projectile, holder);
+        }
+    }
+
+    private void applyHighMegaEffect(IToolStackView tool, ModifierEntry modifier, Projectile projectile, LivingEntity shooter) {
+        // 壁すり抜け
         projectile.noPhysics = true;
 
-        // 判定の巨大化：15ティック（約0.75秒）ごとに周囲の敵をスキャンしてダメージ
-        // この範囲が5倍（半径約2.5〜3.0ブロック）になるイメージ
-        if (projectile.tickCount % 2 == 0) {
-            Level level = projectile.level();
-            AABB area = projectile.getBoundingBox().inflate(2.5D); // 元の判定を2.5倍に広げる（直径5ブロック分）
-            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area);
+        int level = modifier.getLevel();
 
-            for (LivingEntity victim : entities) {
-                if (victim != shooter) {
-                    // 攻撃力を5倍に増幅して直接与える（魔法属性ダメージ扱い）
-                    float baseDamage = 10.0F; // ベース威力
-                    victim.hurt(projectile.damageSources().magic(), baseDamage * 5.0F);
-                }
+        // 2ティックに1回判定
+        if (projectile.tickCount % 2 == 0) {
+            // 素材攻撃力を取得
+            float baseDamage = tool.getStats().get(ToolStats.ATTACK_DAMAGE);
+
+            // 範囲：レベルごとに 2.5 * レベル
+            double range = 2.5D * level;
+            AABB hitArea = projectile.getBoundingBox().inflate(range);
+
+            // ダメージ：素材攻撃力 × レベル × 5倍
+            float finalDamage = baseDamage * (level * 5.0F);
+
+            List<LivingEntity> targets = projectile.level().getEntitiesOfClass(LivingEntity.class, hitArea, e -> e != shooter);
+            for (LivingEntity victim : targets) {
+                // 特性を乗せるために mobAttack を使用
+                victim.hurt(projectile.damageSources().mobAttack(shooter), finalDamage);
             }
         }
 
-        // 弾が奈落に落ち続けないよう、一定時間で消去
+        // 5秒で消滅
         if (projectile.tickCount > 100) {
             projectile.discard();
         }
