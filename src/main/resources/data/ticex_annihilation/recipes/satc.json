@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "PNP",
+    " P "
+  ],
+  "key": {
+    "P": { "item": "ticex_annihilation:psycho_frame" },
+    "N": { "item": "minecraft:netherite_block" }
+  },
+  "result": {
+    "item": "ticex_annihilation:satc"
+  }
+}

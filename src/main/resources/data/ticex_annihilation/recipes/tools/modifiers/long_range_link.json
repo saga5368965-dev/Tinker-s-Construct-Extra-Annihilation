@@ -1,0 +1,15 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    { "item": "ticex_annihilation:bio_sensor" },
+    { "item": "minecraft:ender_eye" },
+    { "item": "minecraft:spyglass" }
+  ],
+  "tools": {
+    "tag": "tconstruct:modifiable"
+  },
+  "slots": {
+    "abilities": 1
+  },
+  "result": "ticex_annihilation:astral_link"
+}

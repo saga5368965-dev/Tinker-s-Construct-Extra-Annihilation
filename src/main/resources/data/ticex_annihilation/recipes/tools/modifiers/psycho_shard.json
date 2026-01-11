@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    { "item": "minecraft:nether_star" },
+    { "item": "minecraft:orange_dye" },
+    { "item": "minecraft:amethyst_cluster" },
+    { "item": "minecraft:blaze_powder" },
+    { "item": "minecraft:crying_obsidian" }
+  ],
+  "tools": {
+    "tag": "tconstruct:modifiable"
+  },
+  "slots": {
+    "abilities": 1
+  },
+  "max_level": 1,
+  "result": "ticex_annihilation:psycho_shard"
+}

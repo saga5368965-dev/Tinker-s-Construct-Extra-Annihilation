@@ -1,0 +1,23 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    {
+      "item": "minecraft:nether_star",
+      "count": 2
+    },
+    {
+      "item": "minecraft:lapis_block",
+      "count": 5
+    }
+  ],
+  "tools": {
+    "tag": "tconstruct:modifiable"
+  },
+  "slots": {
+    "abilities": 1
+  },
+  "result": {
+    "name": "ticex_annihilation:eternal_supply",
+    "level": 1
+  }
+}

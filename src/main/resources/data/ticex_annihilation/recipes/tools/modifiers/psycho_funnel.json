@@ -1,0 +1,16 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    { "item": "minecraft:quartz_block" },
+    { "item": "ticex_annihilation:psycho_frame" },
+    { "item": "minecraft:quartz_block" }
+  ],
+  "tools": {
+    "tag": "tconstruct:modifiable"
+  },
+  "slots": {
+    "upgrades": 1
+  },
+  "max_level": 1,
+  "result": "ticex_annihilation:psycho_funnel"
+}

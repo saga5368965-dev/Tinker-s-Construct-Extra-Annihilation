@@ -1,0 +1,15 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    { "item": "ticex_annihilation:bio_sensor" },
+    { "item": "ticex_annihilation:psycho_frame" },
+    { "item": "minecraft:nether_star" }
+  ],
+  "tools": {
+    "tag": "tconstruct:modifiable"
+  },
+  "slots": {
+    "abilities": 1
+  },
+  "result": "ticex_annihilation:psycho_jack"
+}

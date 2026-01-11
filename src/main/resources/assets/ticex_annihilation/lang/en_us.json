@@ -1,0 +1,64 @@
+{
+  "item.ticex_annihilation.satc": "S.A.T.C. Tactical Gauntlet",
+  "item.ticex_annihilation.satc_item": "S.A.T.C. Tactical Gauntlet",
+  "entity.ticex_annihilation.funnel": "SATC Autonomous Funnel Unit",
+
+  "gui.ticex_annihilation.satc_title": "S.A.T.C. Tactical Interface",
+
+  "category.ticex_annihilation": "S.A.T.C. System",
+  "key.ticex_annihilation.deploy": "Deploy/Recall Funnels",
+  "key.ticex_annihilation.toggle_funnels": "Deploy/Recall Funnels",
+  "key.ticex_annihilation.change_mode": "Cycle Logic Mode",
+  "key.categories.ticex_annihilation": "TiCEx Annihilation",
+
+  "chat.ticex_annihilation.deploy": "§b[SYSTEM]§f Funnels active. Commencing sector suppression.§r",
+  "chat.ticex_annihilation.recall": "§e[SYSTEM]§f Recall sequence initiated. All units returning.§r",
+  "chat.ticex_annihilation.no_weapons": "§c[FATAL ERROR]§f Weapon bay empty. Combat impossible.§r",
+  "chat.ticex_annihilation.mode_changed": "§6[LINK]§f Logic Core switched: §l%s§r",
+
+  "mode.ticex_annihilation.annihilation": "Annihilation (Total Target Elimination)",
+  "mode.ticex_annihilation.guard": "Intercept (Hostile Interception)",
+  "mode.ticex_annihilation.pvp": "Duel (Anti-Personnel Combat)",
+
+  "message.ticex_annihilation.deploy": ">> §bDeployment Complete:§f All-range combat system online.",
+  "message.ticex_annihilation.recall": ">> §eRecall Complete:§f Return sequence finished. Diagnosis: All systems green.",
+  "message.ticex_annihilation.no_weapons": ">> §4Error:§f No weapon units detected. Please load via SATC Link.",
+  "message.ticex_annihilation.out_of_resource": ">> §cWarning:§f Unit [%s] resource depleted. Executing auto-recall.",
+
+  "message.ticex_annihilation.mode.0": "Annihilation Mode",
+  "message.ticex_annihilation.mode.1": "Guard Mode",
+  "message.ticex_annihilation.mode.2": "Duel Mode",
+  "message.ticex_annihilation.system_prefix": "§8[LOG]§7 ",
+
+  "item.ticex_annihilation.psycho_frame": "Psycho-Frame",
+  "item.ticex_annihilation.psycho_frame.desc": "An unknown material that physicalizes the light of the human heart. It holds enough power to push back even a massive asteroid.",
+
+  "modifier.ticex_annihilation.eternal_supply": "Dimensional Link Supply",
+  "modifier.ticex_annihilation.eternal_supply.flavor": "The Psycho-Frame can transcend even the walls of dimensions... Human will makes the impossible possible!",
+  "modifier.ticex_annihilation.eternal_supply.description": "Spacetime interference via Psycho-Frame. Nullifies resource consumption of all SATC-linked weaponry by supplying from other dimensions.",
+
+  "modifier.ticex_annihilation.psycho_funnel": "Singularity Psycho-Funnel",
+  "modifier.ticex_annihilation.psycho_funnel.desc": "Places all projectiles (including magic and bullets) under Psycommu control, granting them auto-tracking capabilities.",
+  "modifier.ticex_annihilation.psycho_funnel.flavor": "Resonating with pure white crystals, 'fangs' that ignore space itself pierce the enemy.",
+
+  "modifier.ticex_annihilation.psycho_shard": "Psycho-Shard Generator",
+  "modifier.ticex_annihilation.psycho_shard.desc": "This is nothing but 'light'... O Psycho-Frame that moved the stars, now bring judgment upon them!",
+  "modifier.ticex_annihilation.psycho_shard.tooltip": "Freezes surrounding space in orange despair, ceasing all functional activities.",
+
+  "modifier.ticex_annihilation.psycho_jack": "Bio-Sensor Overload",
+  "modifier.ticex_annihilation.psycho_jack.flavor": "Life... life is power! Life is what supports this entire universe!",
+  "modifier.ticex_annihilation.psycho_jack.description": "Seizes and enhances all incoming attacks, launching them back at the source.",
+
+  "modifier.ticex_annihilation.long_range_link": "Astral Link",
+  "modifier.ticex_annihilation.long_range_link.flavor": "I can see the enemy...!",
+  "modifier.ticex_annihilation.long_range_link.description": "Extends the range of firearms and magic by 5x. Completely nullifies bullet spread and damage falloff.",
+  "item.ticex_annihilation.bio_sensor": "Bio-Sensor",
+  "item.ticex_annihilation.bio_sensor.desc": "An interface that translates brainwaves into machine code, pushing performance to the limit. Some say it can even amplify the human heart...",
+  "block.ticex_annihilation.minofsky_diffuser": "Minofsky Particle Diffuser",
+  "block.ticex_annihilation.neutron_jammer": "Neutron Jammer",
+  "effect.ticex_annihilation.minofsky_interference": "Minofsky Interference",
+  "effect.ticex_annihilation.neutron_jammer_active": "N-Jammer Field",
+  "description.ticex_annihilation.marvels_of_mechanism": "Minecraftian Marvels of Mechanism",
+  "description.ticex_annihilation.minofsky_short": "Diffuses Minofsky particles to disable electronics.",
+  "description.ticex_annihilation.nj_short": "Suppresses nuclear thermal reactions within range.",
+}
