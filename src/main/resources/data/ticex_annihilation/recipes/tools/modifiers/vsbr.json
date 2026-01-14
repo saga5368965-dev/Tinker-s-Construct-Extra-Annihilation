@@ -1,0 +1,11 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    { "item": "minecraft:nether_star" },
+    { "item": "minecraft:ghast_tear" },
+    { "item": "minecraft:diamond_block" }
+  ],
+  "tools": { "tag": "tconstruct:modifiable/ranged" },
+  "slots": { "ability": 1 },
+  "result": "ticex_annihilation:vsbr"
+}

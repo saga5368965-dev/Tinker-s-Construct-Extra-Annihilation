@@ -1,96 +1,91 @@
 package saga.ticex_annihilation.modifier;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.tconstruct.library.modifiers.Modifier;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.hook.interaction.InventoryTickModifierHook;
+import slimeknights.tconstruct.library.module.ModuleHookMap;
+import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
-import slimeknights.tconstruct.common.TinkerTags;
 
 import java.util.List;
 
-public class MinofskyDriveModifier extends Modifier {
-    public MinofskyDriveModifier() {
-        super();
-        MinecraftForge.EVENT_BUS.register(this);
+/**
+ * ミノフスキー・ドライブ Modifier
+ * 1.20.1 Hook適合。背中に光の翼（パーティクル）を出し、接触した敵を粉砕する。
+ */
+public class MinofskyDriveModifier extends Modifier implements InventoryTickModifierHook {
+
+    @Override
+    protected void registerHooks(ModuleHookMap.Builder builder) {
+        super.registerHooks(builder);
+        builder.addHook(this, ModifierHooks.INVENTORY_TICK);
     }
 
-    @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide) return;
-        ServerPlayer player = (ServerPlayer) event.player;
+    @Override
+    public void onInventoryTick(IToolStackView tool, ModifierEntry modifier, Level level, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
+        // 防具スロット（チェストプレート）に装備されている時のみ発動
+        if (level.isClientSide || !isCorrectSlot) return;
 
-        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (chest.isEmpty() || !chest.is(TinkerTags.Items.MODIFIABLE)) return;
+        int levelMod = modifier.getLevel();
 
-        ToolStack tool = ToolStack.from(chest);
-        int level = tool.getModifierLevel(this);
-        if (level <= 0) return;
-
-        boolean isActive = player.getPersistentData().getBoolean("MinofskyDriveActive");
-
-        if (isActive && player.getAbilities().flying) {
-            // 高速飛行設定
-            float speed = 0.15f + (level * 0.05f);
-            player.getAbilities().setFlyingSpeed(speed);
-
-            // 【追加】光の翼による接触攻撃ロジック
-            handleWingContactDamage(player, tool, level);
-        } else {
-            player.getAbilities().setFlyingSpeed(0.05f);
-        }
-        player.onUpdateAbilities();
-    }
-
-    /**
-     * 光の翼の範囲内にいる敵にダメージとノックバックを与える
-     */
-    private void handleWingContactDamage(ServerPlayer player, ToolStack tool, int level) {
-        // 攻撃範囲：レベルに応じて拡大
-        double range = 4.0 + (level * 2.0);
-        AABB area = player.getBoundingBox().inflate(range);
-
-        // ツール素材の攻撃力を参照
-        float baseAttackDamage = tool.getStats().get(ToolStats.ATTACK_DAMAGE);
-        // 防御力×5ダメージを追加
-        float totalDamage = baseAttackDamage + (player.getArmorValue() * 5.0f);
-
-        List<LivingEntity> targets = player.level().getEntitiesOfClass(LivingEntity.class, area,
-                e -> e != player && e.isAlive() && !e.isAlliedTo(player));
-
-        for (LivingEntity target : targets) {
-            // ダメージ付与（属性はプレイヤー攻撃扱い）
-            if (target.hurt(player.damageSources().playerAttack(player), totalDamage)) {
-                // 強烈なノックバック（外側へ弾き飛ばす）
-                Vec3 knockback = target.position().subtract(player.position()).normalize().scale(1.5 + (level * 0.5));
-                target.setDeltaMovement(knockback);
-                target.hurtMarked = true;
+        // 1. 飛行能力の付与（クリエイティブ飛行と同じ挙動を強制）
+        if (holder instanceof net.minecraft.world.entity.player.Player player) {
+            if (!player.getAbilities().mayfly) {
+                player.getAbilities().mayfly = true;
+                player.onUpdateAbilities();
             }
         }
+
+        // 2. 「光の翼」パーティクル演出
+        if (level instanceof ServerLevel serverLevel && holder.tickCount % 2 == 0) {
+            spawnWingParticles(serverLevel, holder);
+        }
+
+        // 3. 接触ダメージ：周囲の敵を素材攻撃力×5倍で粉砕
+        executeTouchDamage(tool, levelMod, holder);
     }
 
-    @SubscribeEvent
-    public void onAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            boolean isActive = player.getPersistentData().getBoolean("MinofskyDriveActive");
-            if (isActive) {
-                ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-                if (!chest.isEmpty() && ToolStack.from(chest).getModifierLevel(this) > 0) {
-                    // I-フィールド（射撃無効）
-                    if (event.getSource().getDirectEntity() instanceof Projectile) {
-                        event.getSource().getDirectEntity().discard();
-                        event.setCanceled(true);
-                    }
-                }
+    private void spawnWingParticles(ServerLevel level, LivingEntity holder) {
+        Vec3 look = holder.getLookAngle().reverse(); // 背中方向
+        Vec3 pos = holder.position().add(0, holder.getEyeHeight() * 0.7, 0);
+
+        // 左右に広がる翼のようなパーティクル
+        for (int i = 0; i < 5; i++) {
+            double sideOffset = (i - 2) * 0.4;
+            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                    pos.x + look.x * 0.3 + (holder.getBbWidth() * sideOffset),
+                    pos.y + (i * 0.1),
+                    pos.z + look.z * 0.3,
+                    1, 0.1, 0.1, 0.1, 0.02);
+
+            // より「翼」らしく、エンドロッドの光を混ぜる
+            level.sendParticles(ParticleTypes.END_ROD,
+                    pos.x + look.x * 0.2, pos.y, pos.z + look.z * 0.2,
+                    1, 0.5, 0.5, 0.5, 0.01);
+        }
+    }
+
+    private void executeTouchDamage(IToolStackView tool, int modifierLevel, LivingEntity holder) {
+        // 判定範囲：自分の周囲2マス程度
+        AABB hitBox = holder.getBoundingBox().inflate(2.0);
+        List<LivingEntity> targets = holder.level().getEntitiesOfClass(LivingEntity.class, hitBox, e -> e != holder && e.isAlive());
+
+        if (!targets.isEmpty()) {
+            float baseDamage = tool.getStats().get(ToolStats.ATTACK_DAMAGE);
+            // 素材攻撃力 × レベル × 5倍 の接触ダメージ
+            float finalDamage = baseDamage * (modifierLevel * 5.0F);
+
+            for (LivingEntity victim : targets) {
+                // 接触するだけでダメージ。ダメージソースは本人として扱う
+                victim.hurt(holder.damageSources().mobAttack(holder), finalDamage);
             }
         }
     }

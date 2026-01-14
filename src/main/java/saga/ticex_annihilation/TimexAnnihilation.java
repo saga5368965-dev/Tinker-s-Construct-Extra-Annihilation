@@ -21,8 +21,6 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import saga.ticex_annihilation.client.gui.SATCScreen;
 import saga.ticex_annihilation.client.renderer.FunnelRenderer;
-import saga.ticex_annihilation.client.renderer.MinofskyDiffuserRenderer;
-import saga.ticex_annihilation.client.renderer.NeutronJammerRenderer;
 import saga.ticex_annihilation.config.SATCConfig;
 import saga.ticex_annihilation.init.MenuInit;
 import saga.ticex_annihilation.registries.*;
@@ -43,9 +41,7 @@ public class TimexAnnihilation {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SATCConfig.SPEC);
 
         // 1. 各種レジストリの登録 (saga.ticex_annihilation.registries パッケージのもの)
-        BlockRegistry.BLOCKS.register(modEventBus);
         ItemRegistry.ITEMS.register(modEventBus);
-        BlockEntityRegistry.BLOCK_ENTITIES.register(modEventBus);
         EntityRegistry.ENTITIES.register(modEventBus);
         MenuInit.MENUS.register(modEventBus);
         MobEffectRegistry.EFFECTS.register(modEventBus);
@@ -72,12 +68,6 @@ public class TimexAnnihilation {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             // エンティティ（ファンネル等）の描画登録
             event.registerEntityRenderer(EntityRegistry.FUNNEL.get(), FunnelRenderer::new);
-
-            // ブロックエンティティ（散布機・ジャマー）の描画登録
-            event.registerBlockEntityRenderer(BlockEntityRegistry.MINOFSKY_DIFFUSER.get(),
-                    MinofskyDiffuserRenderer::new);
-            event.registerBlockEntityRenderer(BlockEntityRegistry.NEUTRON_JAMMER.get(),
-                    NeutronJammerRenderer::new);
         }
     }
 
