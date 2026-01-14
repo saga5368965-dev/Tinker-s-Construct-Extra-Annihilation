@@ -7,59 +7,45 @@ import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.item.ModernKineticGunItem;
 import com.tacz.guns.util.AttachmentDataUtils;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
+
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.common.TinkerTags;
+import saga.ticex_annihilation.registries.ModifierRegistry;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
-// @Mod.EventBusSubscriber を使うことで、Modifierのインスタンス生成とは無関係にイベントを確実に拾います
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EternalSupplyModifier extends Modifier {
 
-    // 静的判定のためにModifierの参照を保持（Registryから取得する形でも可）
-    private static EternalSupplyModifier INSTANCE;
-
     public EternalSupplyModifier() {
         super();
-        INSTANCE = this;
-    }
-
-    @Override
-    @NotNull
-    public Component getDisplayName(int level) {
-        return Component.translatable("modifier.ticex_annihilation.eternal_supply");
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onSpellCast(SpellOnCastEvent event) {
-        if (INSTANCE == null) return;
-        Player player = event.getEntity();
-        if (player instanceof ServerPlayer serverPlayer && INSTANCE.hasModifier(serverPlayer)) {
+        LivingEntity entity = event.getEntity();
+        if (entity != null && hasModifierStatic(entity)) {
             event.setManaCost(0);
-            MagicData pmg = MagicData.getPlayerMagicData(serverPlayer);
+            MagicData pmg = MagicData.getPlayerMagicData(entity);
             if (pmg != null && pmg.getPlayerCooldowns() != null) {
-                pmg.getPlayerCooldowns().addCooldown(event.getSpellId(), 2);
+                pmg.getPlayerCooldowns().addCooldown(event.getSpellId(), 1);
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onGunFire(GunFireEvent event) {
-        if (INSTANCE == null) return;
-        if (event.getShooter() instanceof Player player && INSTANCE.hasModifier(player)) {
+        if (event.getShooter() instanceof Player player && hasModifierStatic(player)) {
             ItemStack gunStack = event.getGunItemStack();
             if (gunStack.getItem() instanceof ModernKineticGunItem gunItem) {
                 TimelessAPI.getCommonGunIndex(gunItem.getGunId(gunStack)).ifPresent(index -> {
@@ -71,24 +57,34 @@ public class EternalSupplyModifier extends Modifier {
         }
     }
 
-    private boolean hasModifier(Player player) {
-        for (ItemStack stack : player.getInventory().items) {
+    public static boolean hasModifierStatic(LivingEntity entity) {
+        // バニラのスロットをチェック
+        for (ItemStack stack : entity.getAllSlots()) {
             if (checkStack(stack)) return true;
         }
-        for (ItemStack stack : player.getInventory().armor) {
-            if (checkStack(stack)) return true;
-        }
-        return checkStack(player.getOffhandItem());
+
+        // Curiosのスロットをチェック
+        LazyOptional<ICuriosItemHandler> curiosLazy = CuriosApi.getCuriosHelper().getCuriosHandler(entity);
+        return curiosLazy.map(handler -> {
+            for (ICurioStacksHandler stacksHandler : handler.getCurios().values()) {
+                IDynamicStackHandler stackHandler = stacksHandler.getStacks();
+                for (int i = 0; i < stackHandler.getSlots(); i++) {
+                    if (checkStack(stackHandler.getStackInSlot(i))) return true;
+                }
+            }
+            return false;
+        }).orElse(false);
     }
 
-    private boolean checkStack(ItemStack stack) {
+    private static boolean checkStack(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        if (stack.getItem() instanceof IModifiableDisplay || stack.is(TinkerTags.Items.MODIFIABLE)) {
+        if (stack.getItem() instanceof slimeknights.tconstruct.library.tools.item.IModifiableDisplay) {
             try {
-                if (stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("tinker_data")) {
-                    return ToolStack.from(stack).getModifierLevel(this) > 0;
-                }
-            } catch (Exception ignored) {}
+                // ModifierRegistryからこのModifierを取得してレベル判定
+                return ToolStack.from(stack).getModifierLevel(ModifierRegistry.ETERNAL_SUPPLY.get()) > 0;
+            } catch (Exception e) {
+                return false;
+            }
         }
         return false;
     }

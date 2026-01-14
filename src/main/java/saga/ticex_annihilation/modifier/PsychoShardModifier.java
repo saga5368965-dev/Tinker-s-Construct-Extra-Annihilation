@@ -1,21 +1,14 @@
 package saga.ticex_annihilation.modifier;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import slimeknights.mantle.client.TooltipKey;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeHitModifierHook;
-import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InventoryTickModifierHook;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
@@ -23,52 +16,50 @@ import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 import java.util.List;
 
-public class PsychoShardModifier extends Modifier implements InventoryTickModifierHook, TooltipModifierHook, MeleeHitModifierHook {
+public class PsychoShardModifier extends Modifier implements InventoryTickModifierHook, MeleeHitModifierHook {
 
     @Override
     protected void registerHooks(ModuleHookMap.@NotNull Builder builder) {
         super.registerHooks(builder);
-        // あなたの ModifierHooks 定義に従って登録
-        builder.addHook(this, ModifierHooks.INVENTORY_TICK, ModifierHooks.TOOLTIP, ModifierHooks.MELEE_HIT);
+        // TooltipHookを削除し、TickとHitのみ登録
+        builder.addHook(this, ModifierHooks.INVENTORY_TICK, ModifierHooks.MELEE_HIT);
     }
 
-    @Override
-    public @NotNull Component getDisplayName(int level) {
-        return Component.translatable("modifier.ticex_annihilation.psycho_shard");
-    }
-
-    @Override
-    public void addTooltip(IToolStackView tool, ModifierEntry modifier, @Nullable Player player, List<Component> tooltip, TooltipKey tooltipKey, TooltipFlag tooltipFlag) {
-        tooltip.add(Component.translatable("modifier.ticex_annihilation.psycho_shard.description").withStyle(ChatFormatting.GOLD));
-    }
-
-    // 提供された .class ソースの引数に合わせて修正
     @Override
     public void afterMeleeHit(IToolStackView tool, ModifierEntry modifier, ToolAttackContext context, float damageDealt) {
         LivingEntity target = context.getLivingTarget();
         if (target != null && !target.level().isClientSide) {
-            // 直接攻撃した相手を永続拘束
+            // 直接攻撃した相手を永続拘束（フラグ付与）
             target.getPersistentData().putBoolean("PsychoShardPermanent", true);
-            // 周囲をレベルに応じた範囲で拘束 (30秒)
-            applyAreaLock(target, 20.0D * modifier.getLevel(), context.getAttacker());
+
+            // 攻撃時の波及範囲: レベル1で100m、レベル2で200m...
+            // 殴った瞬間にマップの広範囲が静止するイメージ
+            double burstRadius = 100.0D * modifier.getLevel();
+            applyAreaLock(target, burstRadius, context.getAttacker());
         }
     }
 
     @Override
     public void onInventoryTick(@NotNull IToolStackView tool, @NotNull ModifierEntry modifier, Level level, LivingEntity holder, int itemSlot, boolean isSelected, boolean isCorrectSlot, ItemStack stack) {
-        // 装備中（isCorrectSlot）なら常に周囲をジャック
-        if (!level.isClientSide && isCorrectSlot) {
-            applyAreaLock(holder, 100.0D, holder);
+        // 装備中なら常に周囲を支配（負荷軽減のため2秒に1回実行）
+        if (!level.isClientSide && isCorrectSlot && holder.tickCount % 40 == 0) {
+            // パッシブ範囲: レベル1で100m、レベルごとに+50m
+            // 装備しているだけで半径100m以上の敵が自動的にジャックされる
+            double passiveRadius = 100.0D + (modifier.getLevel() - 1) * 50.0D;
+            applyAreaLock(holder, passiveRadius, holder);
         }
     }
 
     private void applyAreaLock(LivingEntity centerEntity, double radius, LivingEntity attacker) {
+        // 検索範囲を拡張
         AABB area = centerEntity.getBoundingBox().inflate(radius);
         List<LivingEntity> targets = centerEntity.level().getEntitiesOfClass(LivingEntity.class, area);
 
         for (LivingEntity entity : targets) {
-            if (entity == attacker || !entity.isAlive()) continue;
+            // 自身や無敵の存在を除外
+            if (entity == attacker || !entity.isAlive() || entity.isInvulnerable()) continue;
 
+            // 永続フラグがない場合のみ、30秒のタイマーを上書きし続ける
             if (!entity.getPersistentData().getBoolean("PsychoShardPermanent")) {
                 entity.getPersistentData().putInt("PsychoShardTimer", 600);
             }
