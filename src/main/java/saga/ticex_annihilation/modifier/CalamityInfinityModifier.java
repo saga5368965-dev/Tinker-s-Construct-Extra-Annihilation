@@ -1,10 +1,13 @@
 package saga.ticex_annihilation.modifier;
 
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import mods.flammpfeil.slashblade.item.SwordType;
 import moffy.ticex.lib.hook.EmbossmentModifierHook;
 import moffy.ticex.modules.general.TicEXRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,16 +20,18 @@ import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CalamityInfinityModifier extends NoLevelsModifier implements EmbossmentModifierHook {
 
     private static CalamityInfinityModifier INSTANCE;
+    // 属性操作用のユニークID
+    private static final UUID COOLDOWN_MODIFIER_UUID = UUID.fromString("f426e9b2-326b-4e1c-b5f7-879685e92134");
 
     public CalamityInfinityModifier() {
         super();
         INSTANCE = this;
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -46,8 +51,6 @@ public class CalamityInfinityModifier extends NoLevelsModifier implements Emboss
 
             if (inputTag.contains("bladeState")) {
                 bladeStateTag = inputTag.getCompound("bladeState");
-            } else if (inputTag.contains("tinker_data")) {
-                bladeStateTag = inputTag.getCompound("bladeState");
             }
 
             if (bladeStateTag != null) {
@@ -62,26 +65,32 @@ public class CalamityInfinityModifier extends NoLevelsModifier implements Emboss
     }
 
     /**
-     * 【SEコスト0の実質的実装】
-     * 抜刀剣のイベントクラスが解決できないため、PlayerTickで直接制御します。
-     * SEを使用している間（抜刀剣を構えている間）、経験値が減らないようにロックします。
+     * 属性操作とSEコスト維持
      */
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (INSTANCE == null || event.phase != TickEvent.Phase.START || event.player.level().isClientSide) return;
 
         Player player = event.player;
+        AttributeInstance cooldownAttr = player.getAttribute(AttributeRegistry.COOLDOWN_REDUCTION.get());
+
         if (INSTANCE.isPlayerHoldingCalamity(player)) {
-            // 抜刀剣のSEは通常「経験値レベル」ではなく「経験値のバー（Exp）」を消費します。
-            // 常に少しだけ経験値を与えることで、消費を即座に相殺し、実質コスト0にします。
-            if (player.experienceProgress < 0.1F && player.experienceLevel > 0) {
-                // 経験値が微減した瞬間に補填する（厄災の指輪による無限供給の演出）
-                player.giveExperiencePoints(1);
+            // --- 属性操作: クールタイム短縮を+1000% (実質10倍速＝ほぼゼロ) ---
+            if (cooldownAttr != null && cooldownAttr.getModifier(COOLDOWN_MODIFIER_UUID) == null) {
+                cooldownAttr.addTransientModifier(new AttributeModifier(COOLDOWN_MODIFIER_UUID, "Calamity Infinity Cooldown", 10.0, AttributeModifier.Operation.ADDITION));
             }
 
-            // もしレベル消費型のSEだった場合も考慮して、最低1レベルを維持
+            // --- SEコスト補填 ---
+            if (player.experienceProgress < 0.1F && player.experienceLevel > 0) {
+                player.giveExperiencePoints(1);
+            }
             if (player.experienceLevel < 1) {
                 player.experienceLevel = 1;
+            }
+        } else {
+            // --- Modifierを持っていない時は属性を即座に除去 ---
+            if (cooldownAttr != null && cooldownAttr.getModifier(COOLDOWN_MODIFIER_UUID) != null) {
+                cooldownAttr.removeModifier(COOLDOWN_MODIFIER_UUID);
             }
         }
     }
@@ -91,15 +100,12 @@ public class CalamityInfinityModifier extends NoLevelsModifier implements Emboss
     }
 
     private boolean checkStack(ItemStack stack) {
-        if (stack.isEmpty() || !stack.hasTag()) return false;
+        if (stack.isEmpty()) return false;
         try {
-            // NBTを直接参照して判定。これが一番確実です。
+            // TiC公式の判定に修正
             return ToolStack.from(stack).getModifierLevel(this) > 0;
         } catch (Exception e) {
             return false;
         }
     }
-
-    @Override
-    public boolean shouldDisplay(boolean advanced) { return true; }
 }

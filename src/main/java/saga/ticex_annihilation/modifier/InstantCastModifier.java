@@ -1,22 +1,15 @@
 package saga.ticex_annihilation.modifier;
 
-import io.redspace.ironsspellbooks.api.events.SpellOnCastEvent;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.event.common.GunFireEvent;
-import com.tacz.guns.item.ModernKineticGunItem;
-import com.tacz.guns.util.AttachmentDataUtils;
-
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.ModList;
 
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
@@ -27,60 +20,45 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import saga.ticex_annihilation.registries.ModifierRegistry;
 import moffy.ticex.item.modifiable.ModifiableIronsSpellbookItem;
-import moffy.ticex.item.modifiable.ModifiableGunItem;
 
 import java.util.UUID;
 
+/**
+ * [高速詠唱 / Instant Cast]
+ * 形式: Forge Event方式 (EternalSupplyModifier準拠)
+ * 効果: ISSの詠唱時間を属性操作によって実質0にする。
+ */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class EternalSupplyModifier extends Modifier {
+public class InstantCastModifier extends Modifier {
 
-    private static final UUID ETERNAL_CT_UUID = UUID.fromString("d326e9b2-326b-4e1c-b5f7-879685e92134");
+    private static final UUID INSTANT_CAST_UUID = UUID.fromString("c226e9b2-326b-4e1c-b5f7-879685e92134");
 
-    public EternalSupplyModifier() {
+    public InstantCastModifier() {
         super();
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START || event.player.level().isClientSide) return;
+        // ISSが未導入、またはクライアント側ならスキップ
+        if (!ModList.get().isLoaded("irons_spellbooks") ||
+                event.phase != TickEvent.Phase.START ||
+                event.player.level().isClientSide) return;
 
         Player player = event.player;
-        AttributeInstance cooldownAttr = player.getAttribute(AttributeRegistry.COOLDOWN_REDUCTION.get());
+        AttributeInstance castTimeAttr = player.getAttribute(AttributeRegistry.CAST_TIME_REDUCTION.get());
 
+        if (castTimeAttr == null) return;
+
+        // 手持ちまたはCuriosに「InstantCast付き魔導書」があるか
         if (isEquippedOrHeld(player, ModifiableIronsSpellbookItem.class)) {
-            if (cooldownAttr != null && cooldownAttr.getModifier(ETERNAL_CT_UUID) == null) {
-                cooldownAttr.addTransientModifier(new AttributeModifier(ETERNAL_CT_UUID, "Eternal Supply Cooldown", 10.0, AttributeModifier.Operation.ADDITION));
+            if (castTimeAttr.getModifier(INSTANT_CAST_UUID) == null) {
+                // 10.0 (1000%短縮) を加算
+                castTimeAttr.addTransientModifier(new AttributeModifier(INSTANT_CAST_UUID, "Annihilation Instant Cast", 10.0, AttributeModifier.Operation.ADDITION));
             }
         } else {
-            if (cooldownAttr != null && cooldownAttr.getModifier(ETERNAL_CT_UUID) != null) {
-                cooldownAttr.removeModifier(ETERNAL_CT_UUID);
-            }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onSpellCast(SpellOnCastEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity instanceof Player player) {
-            if (isEquippedOrHeld(player, ModifiableIronsSpellbookItem.class)) {
-                event.setManaCost(0);
-            }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onGunFire(GunFireEvent event) {
-        LivingEntity shooter = event.getShooter();
-        if (shooter instanceof Player player) {
-            if (isEquippedOrHeld(player, ModifiableGunItem.class)) {
-                ItemStack gunStack = event.getGunItemStack();
-                if (gunStack.getItem() instanceof ModernKineticGunItem gunItem) {
-                    TimelessAPI.getCommonGunIndex(gunItem.getGunId(gunStack)).ifPresent(index -> {
-                        int maxAmmo = AttachmentDataUtils.getAmmoCountWithAttachment(gunStack, index.getGunData());
-                        gunItem.setCurrentAmmoCount(gunStack, maxAmmo);
-                        gunItem.setBulletInBarrel(gunStack, true);
-                    });
-                }
+            // 条件を満たさなくなったら属性を削除
+            if (castTimeAttr.getModifier(INSTANT_CAST_UUID) != null) {
+                castTimeAttr.removeModifier(INSTANT_CAST_UUID);
             }
         }
     }
@@ -90,7 +68,7 @@ public class EternalSupplyModifier extends Modifier {
         if (checkWithModifier(player.getMainHandItem(), itemClass)) return true;
         if (checkWithModifier(player.getOffhandItem(), itemClass)) return true;
 
-        // 2. Curiosチェック (ループ方式に変更)
+        // 2. Curiosチェック
         LazyOptional<ICuriosItemHandler> curiosOpt = CuriosApi.getCuriosHelper().getCuriosHandler(player);
         if (curiosOpt.isPresent()) {
             ICuriosItemHandler handler = curiosOpt.orElseThrow(IllegalStateException::new);
@@ -108,9 +86,9 @@ public class EternalSupplyModifier extends Modifier {
     private static boolean checkWithModifier(ItemStack stack, Class<?> itemClass) {
         if (!stack.isEmpty() && itemClass.isInstance(stack.getItem())) {
             try {
-                // TiCのIModifiableDisplayを実装しているアイテムか確認
                 if (stack.getItem() instanceof slimeknights.tconstruct.library.tools.item.IModifiableDisplay) {
-                    return ToolStack.from(stack).getModifierLevel(ModifierRegistry.ETERNAL_SUPPLY.get()) > 0;
+                    // ModifierRegistryのINSTANT_CASTがこのアイテムについているか判定
+                    return ToolStack.from(stack).getModifierLevel(ModifierRegistry.INSTANT_CAST.get()) > 0;
                 }
             } catch (Exception e) {
                 return false;

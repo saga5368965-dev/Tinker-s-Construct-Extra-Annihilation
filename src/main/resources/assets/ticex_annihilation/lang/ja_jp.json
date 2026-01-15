@@ -38,11 +38,15 @@
   "modifier.ticex_annihilation.eternal_supply.description": "サイコフレームによる時空干渉。全兵装のリソースを他次元から供給し、消費を無効化する。",
 
   "modifier.ticex_annihilation.psycho_funnel": "シンギュラリティ・サイコファンネル",
-  "modifier.ticex_annihilation.psycho_funnel.desc": "あらゆる飛翔体をサイコミュ制御下に置き、敵を自動追尾させる。",
+  "modifier.ticex_annihilation.psycho_funnel.description": "あらゆる飛翔体をサイコミュ制御下に置き、敵を自動追尾させる。",
   "modifier.ticex_annihilation.psycho_funnel.flavor": "純白の結晶体と共鳴し、空間を無視した「牙」が敵を貫く。",
 
+  "modifier.ticex_annihilation.minofsky_drive": "ミノフスキー・ドライブ",
+  "modifier.ticex_annihilation.minofsky_drive.flavor": "「……これが、光の翼！？（V2ガンダム並感）」",
+  "modifier.ticex_annihilation.minofsky_drive.description": "§b高出力光翼展開:§r 驚異的な飛行能力を付与。背後から噴き出す光の翼は、防御力の5倍の破壊力で触れるものすべてを切り裂く。",
+
   "modifier.ticex_annihilation.psycho_shard": "サイコシャード・ジェネレーター",
-  "modifier.ticex_annihilation.psycho_shard.desc": "サイコフレームが発生させる光の結晶。擬似的な物理法則の書き換えを行う。",
+  "modifier.ticex_annihilation.psycho_shard.description": "サイコフレームが発生させる光の結晶。擬似的な物理法則の書き換えを行う。",
   "modifier.ticex_annihilation.psycho_shard.tooltip": "周囲の空間を「光」で満たし、敵対勢力のあらゆる攻撃機能を焼滅させる。",
   "modifier.ticex_annihilation.psycho_jack": "バイオセンサー・オーバーロード",
   "modifier.ticex_annihilation.psycho_jack.flavor": "「命は、命は力なんだ。命は、この宇宙を支えているものなんだ！」",
@@ -58,6 +62,16 @@
   "modifier.ticex_annihilation.high_mega_link": "ハイパー・ビーム・バースト",
   "modifier.ticex_annihilation.high_mega_link.flavor": "「エネルギーが……これ以上は、もう、出せない……！！」",
   "modifier.ticex_annihilation.high_mega_link.description": "バイオセンサーの臨界突破。放たれる一撃を巨大化し、遮蔽物を透過、超高熱量ですべてを焼き尽くす。",
-  "modifier.ticex_annihilation.vsbr": "ヴェスバー",
-  "modifier.ticex_annihilation.vsbr.description": "§6高出力貫通加速: 素材攻撃力の5倍の威力で敵を貫く。貫通するたびに弾速が上昇する。"
+  "modifier.ticex_annihilation.instant_cast": "高速詠唱",
+  "modifier.ticex_annihilation.instant_cast.flavor": "思考の速度で術式を展開する。",
+  "modifier.ticex_annihilation.instant_cast.description": "魔法の詠唱時間を属性レベルで短縮し、全てのスペルを即時発動させます。",
+
+  "modifier.ticex_annihilation.infinity_slot": "無限の領域",
+  "modifier.ticex_annihilation.infinity_slot.flavor": "器の限界を超越した拡張性。",
+  "modifier.ticex_annihilation.infinity_slot.description": "Re:Avaritiaが導入されている場合、ツールの改造枠を各99スロット追加します。",
+  "modifier.ticex_annihilation.vsbr_annihilation": "ヴェスバー",
+  "modifier.ticex_annihilation.vsbr_annihilation": "§6高出力貫通加速: 素材攻撃力の5倍の威力で敵を貫く。貫通するたびに弾速が上昇する。",
+  "modifier.ticex_annihilation.calamity_infinity": "カラミティ・インフィニティ",
+  "modifier.ticex_annihilation.calamity_infinity.flavor": "万物を喰らう厄災の指輪",
+  "modifier.ticex_annihilation.calamity_infinity.description": "金床で合成した抜刀剣の技(SE)を奪い、自身のものとする。さらに、その技を行使するための経験値コストをゼロにする。"
 }

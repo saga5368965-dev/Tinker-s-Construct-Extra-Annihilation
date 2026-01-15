@@ -14,8 +14,12 @@ public class ModifierRegistry {
     public static final StaticModifier<HighMegaLinkModifier> HIGH_MEGA_LINK;
     public static final StaticModifier<LongRangeLinkModifier> LONG_RANGE_LINK;
     public static final StaticModifier<PsychoJackModifier> PSYCHO_JACK;
-    public static final StaticModifier<MinofskyDriveModifier> MINOFSKY_DRIVE;
     public static final StaticModifier<VersatileSmartBeamEffectModifier> VSBR;
+    public static final StaticModifier<CalamityInfinityModifier> CALAMITY_INFINITY;
+
+    // 追加：詠唱時間消失とスロット無限
+    public static final StaticModifier<InstantCastModifier> INSTANT_CAST;
+    public static final StaticModifier<InfinitySlotModifier> INFINITY_SLOT;
 
     static {
         ETERNAL_SUPPLY = MODIFIERS.register("eternal_supply", EternalSupplyModifier::new);
@@ -24,9 +28,11 @@ public class ModifierRegistry {
         HIGH_MEGA_LINK = MODIFIERS.register("high_mega_link", HighMegaLinkModifier::new);
         LONG_RANGE_LINK = MODIFIERS.register("long_range_link", LongRangeLinkModifier::new);
         PSYCHO_JACK = MODIFIERS.register("psycho_jack", PsychoJackModifier::new);
-        MINOFSKY_DRIVE = MODIFIERS.register("minofsky_drive", MinofskyDriveModifier::new);
+        VSBR = MODIFIERS.register("vsbr_annihilation", VersatileSmartBeamEffectModifier::new);
+        CALAMITY_INFINITY = MODIFIERS.register("calamity_infinity", CalamityInfinityModifier::new);
 
-        // ヴェスバーをレジストリに登録
-        VSBR = MODIFIERS.register("vsbr", VersatileSmartBeamEffectModifier::new);
+        // 新規Modifierの登録
+        INSTANT_CAST = MODIFIERS.register("instant_cast", InstantCastModifier::new);
+        INFINITY_SLOT = MODIFIERS.register("infinity_slot", InfinitySlotModifier::new);
     }
 }

@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:modifier",
+  "inputs": [
+    {
+      "item": "slashblade:proudsoul_trapezohedron",
+      "count": 8
+    }
+  ],
+  "tools": {
+    "item": "ticex:modifiable_slash_blade"
+  },
+  "slots": {
+    "abilities": 1
+  },
+  "max_level": 1,
+  "result": "ticex_annihilation:calamity_infinity"
+}
