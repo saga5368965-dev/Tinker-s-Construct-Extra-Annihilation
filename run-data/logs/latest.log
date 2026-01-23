@@ -1,0 +1,192 @@
+[221月2026 20:35:07.859] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\water\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mixin, true, --mod, ticex_annihilation, --all, --output, D:\ticex_annihilation\src\generated\resources, --existing, D:\ticex_annihilation\src\main\resources]
+[221月2026 20:35:07.865] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.17 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[221月2026 20:35:08.027] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[221月2026 20:35:08.076] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/water/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[221月2026 20:35:08.465] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\water\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[221月2026 20:35:08.472] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\water\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[221月2026 20:35:08.476] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\water\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[221月2026 20:35:08.482] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\water\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[221月2026 20:35:09.645] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 9 dependencies adding them to mods collection
+[221月2026 20:35:15.191] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[221月2026 20:35:15.245] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\water\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, ticex_annihilation, --all, --output, D:\ticex_annihilation\src\generated\resources, --existing, D:\ticex_annihilation\src\main\resources]
+[221月2026 20:35:15.829] [main/INFO] [mixin/]: Remapping refMap avaritia.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.831] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.845] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.847] [main/INFO] [mixin/]: Remapping refMap slashblade.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.851] [main/INFO] [mixin/]: Remapping refMap slashblade.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.855] [main/INFO] [mixin/]: Remapping refMap slashblade.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.861] [main/INFO] [mixin/]: Remapping refMap slashblade.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.865] [main/INFO] [mixin/]: Remapping refMap tacz.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.867] [main/INFO] [mixin/]: Remapping refMap caelus.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.868] [main/INFO] [mixin/]: Remapping refMap curios.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.871] [main/INFO] [mixin/]: Remapping refMap irons_spellbooks.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.872] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.879] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.884] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.891] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.895] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.897] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.901] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:15.905] [main/INFO] [mixin/]: Remapping refMap ticex.refmap.json using D:\ticex_annihilation/build/createSrgToMcp/output.srg
+[221月2026 20:35:16.845] [main/WARN] [mixin/]: Error loading class: mods/flammpfeil/slashblade/event/InputCommandEvent (java.lang.ClassNotFoundException: mods.flammpfeil.slashblade.event.InputCommandEvent)
+[221月2026 20:35:17.442] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [ticex_annihilation]
+[221月2026 20:35:17.598] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
+[221月2026 20:35:27.312] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[221月2026 20:35:27.317] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[221月2026 20:35:27.674] [modloading-worker-0/INFO] [saga.ticex_annihilation.TimexAnnihilation/]: S.A.T.C. System: Neural Link established. All weapon systems online.
+[221月2026 20:35:27.707] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
+[221月2026 20:35:40.582] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/water/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[221月2026 20:35:40.582] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/water/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[221月2026 20:35:41.210] [main/ERROR] [net.minecraftforge.eventbus.EventSubclassTransformer/EVENTBUS]: Could not find parent vazkii/botania/data/recipes/ManaInfusionProvider for class moffy/ticex/datagen/general/recipes/botania/TicEXManaInfusionProvider in classloader cpw.mods.modlauncher.TransformingClassLoader@18b74ea on thread Thread[main,5,main]
+[221月2026 20:35:41.211] [main/ERROR] [net.minecraftforge.eventbus.EventSubclassTransformer/EVENTBUS]: An error occurred building event handler
+java.lang.ClassNotFoundException: vazkii.botania.data.recipes.ManaInfusionProvider
+	at jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[?:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at net.minecraftforge.eventbus.EventSubclassTransformer.buildEvents(EventSubclassTransformer.java:97) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventSubclassTransformer.transform(EventSubclassTransformer.java:48) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventBusEngine.processClass(EventBusEngine.java:26) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.service.ModLauncherService.processClassWithFlags(ModLauncherService.java:32) ~[eventbus-6.0.5.jar:6.0.5+6.0.5+master.eb8e549b]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:88) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:120) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.maybeTransformClassBytes(TransformingClassLoader.java:50) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:113) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:135) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at moffy.ticex.datagen.general.recipes.botania.BotaniaRecipeProvider.<init>(BotaniaRecipeProvider.java:22) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.datagen.general.recipes.TicEXRecipeProvider.<init>(TicEXRecipeProvider.java:34) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.event.TicEXGatherDataEvent.gatherData(TicEXGatherDataEvent.java:71) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.event.__TicEXGatherDataEvent_gatherData_GatherDataEvent.invoke(.dynamic) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:73) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:315) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:296) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.fml.javafmlmod.FMLModContainer.acceptEvent(FMLModContainer.java:121) ~[javafmllanguage-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.ModLoader.lambda$runEventGenerator$28(ModLoader.java:318) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at java.lang.Iterable.forEach(Iterable.java:75) ~[?:?]
+	at net.minecraftforge.fml.ModList.forEachModInOrder(ModList.java:227) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.ModLoader.runEventGenerator(ModLoader.java:318) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.data.loading.DatagenModLoader.begin(DatagenModLoader.java:52) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar:?]
+	at net.minecraft.data.Main.main(Main.java:90) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.dataService(CommonLaunchHandler.java:107) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.ForgeDataUserdevLaunchHandler.devService(ForgeDataUserdevLaunchHandler.java:22) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[221月2026 20:35:41.233] [main/ERROR] [net.minecraftforge.fml.javafmlmod.FMLModContainer/]: Exception caught during firing event: vazkii/botania/data/recipes/ManaInfusionProvider
+	Index: 1
+	Listeners:
+		0: NORMAL
+		1: ASM: class moffy.ticex.event.TicEXGatherDataEvent gatherData(Lnet/minecraftforge/data/event/GatherDataEvent;)V
+java.lang.NoClassDefFoundError: vazkii/botania/data/recipes/ManaInfusionProvider
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1017)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:119)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:135)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	at TRANSFORMER/ticex@0.5.0-SNAPSHOT-2/moffy.ticex.datagen.general.recipes.botania.BotaniaRecipeProvider.<init>(BotaniaRecipeProvider.java:22)
+	at TRANSFORMER/ticex@0.5.0-SNAPSHOT-2/moffy.ticex.datagen.general.recipes.TicEXRecipeProvider.<init>(TicEXRecipeProvider.java:34)
+	at TRANSFORMER/ticex@0.5.0-SNAPSHOT-2/moffy.ticex.event.TicEXGatherDataEvent.gatherData(TicEXGatherDataEvent.java:71)
+	at TRANSFORMER/ticex@0.5.0-SNAPSHOT-2/moffy.ticex.event.__TicEXGatherDataEvent_gatherData_GatherDataEvent.invoke(.dynamic)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:73)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.EventBus.post(EventBus.java:315)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.EventBus.post(EventBus.java:296)
+	at LAYER PLUGIN/javafmllanguage@1.20.1-47.4.0/net.minecraftforge.fml.javafmlmod.FMLModContainer.acceptEvent(FMLModContainer.java:121)
+	at LAYER PLUGIN/fmlcore@1.20.1-47.4.0/net.minecraftforge.fml.ModLoader.lambda$runEventGenerator$28(ModLoader.java:318)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at LAYER PLUGIN/fmlcore@1.20.1-47.4.0/net.minecraftforge.fml.ModList.forEachModInOrder(ModList.java:227)
+	at LAYER PLUGIN/fmlcore@1.20.1-47.4.0/net.minecraftforge.fml.ModLoader.runEventGenerator(ModLoader.java:318)
+	at TRANSFORMER/forge@47.4.0/net.minecraftforge.data.loading.DatagenModLoader.begin(DatagenModLoader.java:52)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.data.Main.main(Main.java:90)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.0/net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.0/net.minecraftforge.fml.loading.targets.CommonLaunchHandler.dataService(CommonLaunchHandler.java:107)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.0/net.minecraftforge.fml.loading.targets.ForgeDataUserdevLaunchHandler.devService(ForgeDataUserdevLaunchHandler.java:22)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.0/net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.run(Launcher.java:108)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.main(Launcher.java:78)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23)
+	at cpw.mods.bootstraplauncher@1.1.2/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141)
+Caused by: java.lang.ClassNotFoundException: vazkii.botania.data.recipes.ManaInfusionProvider
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	at cpw.mods.securejarhandler/cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	... 38 more
+
+[221月2026 20:35:41.236] [main/ERROR] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Caught exception during event net.minecraftforge.data.event.GatherDataEvent@1cc95156 dispatch for modid ticex
+java.lang.NoClassDefFoundError: vazkii/botania/data/recipes/ManaInfusionProvider
+	at java.lang.ClassLoader.defineClass1(Native Method) ~[?:?]
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:1017) ~[?:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:119) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-2.1.10.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:135) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at moffy.ticex.datagen.general.recipes.botania.BotaniaRecipeProvider.<init>(BotaniaRecipeProvider.java:22) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.datagen.general.recipes.TicEXRecipeProvider.<init>(TicEXRecipeProvider.java:34) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.event.TicEXGatherDataEvent.gatherData(TicEXGatherDataEvent.java:71) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at moffy.ticex.event.__TicEXGatherDataEvent_gatherData_GatherDataEvent.invoke(.dynamic) ~[ticex-1242469-7457419_mapped_parchment_2023.09.03-1.20.1.jar%23212!/:0.5.0-SNAPSHOT-2]
+	at net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:73) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:315) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:296) ~[eventbus-6.0.5.jar:?]
+	at net.minecraftforge.fml.javafmlmod.FMLModContainer.acceptEvent(FMLModContainer.java:121) ~[javafmllanguage-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.ModLoader.lambda$runEventGenerator$28(ModLoader.java:318) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at java.lang.Iterable.forEach(Iterable.java:75) ~[?:?]
+	at net.minecraftforge.fml.ModList.forEachModInOrder(ModList.java:227) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.ModLoader.runEventGenerator(ModLoader.java:318) ~[fmlcore-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.data.loading.DatagenModLoader.begin(DatagenModLoader.java:52) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar:?]
+	at net.minecraft.data.Main.main(Main.java:90) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.dataService(CommonLaunchHandler.java:107) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.ForgeDataUserdevLaunchHandler.devService(ForgeDataUserdevLaunchHandler.java:22) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+Caused by: java.lang.ClassNotFoundException: vazkii.botania.data.recipes.ManaInfusionProvider
+	at jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[?:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:137) ~[securejarhandler-2.1.10.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:525) ~[?:?]
+	... 38 more

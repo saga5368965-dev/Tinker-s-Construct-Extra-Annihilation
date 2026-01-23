@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import saga.ticex_annihilation.TimexAnnihilation;
+import saga.ticex_annihilation.item.CalamityRingItem;
 import saga.ticex_annihilation.item.SATCItem;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 
@@ -24,7 +25,7 @@ public class ItemRegistry {
 
     private static final ResourceLocation SATC_ID = new ResourceLocation(TimexAnnihilation.MODID, "satc_item");
 
-    // --- SATC ---
+    // --- SATC (Super Annihilation Tool: Calamity) ---
     public static final RegistryObject<Item> SATC_ITEM = ITEMS.register("satc_item",
             () -> new SATCItem(new Item.Properties().stacksTo(1).fireResistant(),
                     ToolDefinition.create(SATC_ID)
@@ -42,7 +43,7 @@ public class ItemRegistry {
                 }
             });
 
-    // --- バイオセンサー (独立して登録) ---
+    // --- バイオセンサー ---
     public static final RegistryObject<Item> BIO_SENSOR = ITEMS.register("bio_sensor",
             () -> new Item(new Item.Properties().rarity(Rarity.RARE)) {
                 @Override
@@ -57,5 +58,38 @@ public class ItemRegistry {
                     tooltip.add(Component.literal("〜 水の星に愛をこめて 〜")
                             .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
                 }
+            });
+
+    // --- 厄災の指輪 (Calamity Ring) ---
+    public static final RegistryObject<Item> CALAMITY_RING = ITEMS.register("calamity_ring",
+            () -> new CalamityRingItem(new Item.Properties()
+                    .stacksTo(1)
+                    .rarity(Rarity.EPIC)
+                    .fireResistant()
+            ) {
+                @Override
+                public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+                    // 以前作成したヨハネの黙示録関連のキーとも連動
+                    tooltip.add(Component.translatable("item.ticex_annihilation.calamity_ring.quote")
+                            .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD));
+                    tooltip.add(Component.translatable("item.ticex_annihilation.calamity_ring.desc")
+                            .withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
+
+                    // 現在のモード表示（UIを開かずとも確認可能に）
+                    int mode = ((CalamityRingItem)stack.getItem()).getMode(stack);
+                    String modeKey = switch (mode) {
+                        case CalamityRingItem.MODE_FAMINE -> "message.ticex_annihilation.mode.equipment";
+                        case CalamityRingItem.MODE_CONQUEST -> "message.ticex_annihilation.mode.servant";
+                        case CalamityRingItem.MODE_WAR -> "message.ticex_annihilation.mode.war";
+                        case CalamityRingItem.MODE_DEATH -> "message.ticex_annihilation.mode.death";
+                        default -> "unknown";
+                    };
+                    tooltip.add(Component.literal(""));
+                    tooltip.add(Component.translatable("message.ticex_annihilation.mode_switch",
+                            Component.translatable(modeKey)).withStyle(ChatFormatting.GOLD));
+                }
+
+                @Override
+                public boolean isFoil(@NotNull ItemStack stack) { return true; }
             });
 }

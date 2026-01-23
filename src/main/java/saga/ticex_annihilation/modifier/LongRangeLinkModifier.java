@@ -1,36 +1,56 @@
 package saga.ticex_annihilation.modifier;
 
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import slimeknights.tconstruct.library.modifiers.Modifier;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.Entity;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
+import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.modifiers.Modifier;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 public class LongRangeLinkModifier extends Modifier {
+
+    public LongRangeLinkModifier() {
+        super();
+        // TiCのフックを使わず、Forgeのイベントバスに直接登録して飛翔体を監視する
+        MinecraftForge.EVENT_BUS.register(this);
+    }
 
     @Override
     public @NotNull Component getDisplayName(int level) {
         return Component.translatable("modifier.ticex_annihilation.long_range_link");
     }
-    public void projectileTick(IToolStackView tool, ModifierEntry modifier, Projectile projectile, @Nullable Entity shooter, @Nullable Entity target) {
-        // 発射された瞬間(tickCount 1)に補正をかける
-        if (projectile.tickCount == 1) {
-            // 1. 初速を5倍（射程5倍相当）
-            projectile.setDeltaMovement(projectile.getDeltaMovement().scale(5.0));
-            projectile.hasImpulse = true;
 
-            // 2. 弾ブレ無効化：現在の進行方向を「完璧な直線」として再固定
-            // (通常はTickごとに空気抵抗や重力でブレるが、ここで重力を消す)
-            projectile.setNoGravity(true);
+    /**
+     * エンティティが世界に出現した瞬間のイベント
+     */
+    @SubscribeEvent
+    public void onProjectileSpawn(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide) return;
+
+        // 1. 出現したのが飛び道具（Projectile）かチェック
+        if (event.getEntity() instanceof Projectile proj) {
+            Entity shooter = proj.getOwner();
+
+            // 2. 撃った主（Shooter）がLivingEntityであること
+            if (shooter instanceof net.minecraft.world.entity.LivingEntity livingShooter) {
+                // 3. メインハンドの武器にこのModifierがついているかチェック
+                ItemStack held = livingShooter.getMainHandItem();
+                if (held.isEmpty() || !held.is(TinkerTags.Items.MODIFIABLE)) return;
+
+                if (ToolStack.from(held).getModifierLevel(this) > 0) {
+                    // 4. 初速を5倍にし、重力を無効化（長距離リンク発動）
+                    proj.setDeltaMovement(proj.getDeltaMovement().scale(5.0));
+                    proj.hasImpulse = true;
+                    proj.setNoGravity(true);
+
+                    // ※この方式なら tickCount 1 を待たずに「生成された瞬間」に書き換え可能
+                }
+            }
         }
-
-        // 3. 距離減衰の無効化（TACZ/Iron's共通）
-        // 飛翔体の「基本ダメージ」をTickごとにリフレッシュ、あるいは
-        // 飛翔体の「寿命(LifeTime)」による威力低下計算を無視させるフラグを立てる
-        // ※バニラProjectileの範囲では、重力無視＝弾道ドロップなし＝減衰なしとして機能します。
     }
 }

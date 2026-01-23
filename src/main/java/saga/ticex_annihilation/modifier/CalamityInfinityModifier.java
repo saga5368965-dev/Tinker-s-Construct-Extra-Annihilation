@@ -1,33 +1,32 @@
 package saga.ticex_annihilation.modifier;
 
-import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import mods.flammpfeil.slashblade.item.SwordType;
 import moffy.ticex.lib.hook.EmbossmentModifierHook;
 import moffy.ticex.modules.general.TicEXRegistry;
+import mods.flammpfeil.slashblade.entity.BladeStandEntity;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
+import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap.Builder;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-
-import java.util.EnumSet;
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CalamityInfinityModifier extends NoLevelsModifier implements EmbossmentModifierHook {
 
     private static CalamityInfinityModifier INSTANCE;
-    // 属性操作用のユニークID
-    private static final UUID COOLDOWN_MODIFIER_UUID = UUID.fromString("f426e9b2-326b-4e1c-b5f7-879685e92134");
 
     public CalamityInfinityModifier() {
         super();
@@ -35,74 +34,100 @@ public class CalamityInfinityModifier extends NoLevelsModifier implements Emboss
     }
 
     @Override
-    protected void registerHooks(Builder hookBuilder) {
+    public void registerHooks(Builder hookBuilder) {
         hookBuilder.addHook(this, TicEXRegistry.EMBOSSMENT_HOOK);
     }
 
+    // --- メソッド1: TicEX 金床合成時のフック (捕食システム) ---
     @Override
     public boolean applyItem(EmbossmentContext context, int inputIndex, boolean secondary) {
-        ItemStack input = context.getInputStack(inputIndex);
         ItemStack toolStack = context.getToolStack();
-        EnumSet<SwordType> swordTypes = SwordType.from(toolStack);
+        if (toolStack.isEmpty()) return false;
 
-        if (swordTypes.contains(SwordType.BEWITCHED)) {
-            CompoundTag inputTag = input.getOrCreateTag();
-            CompoundTag bladeStateTag = null;
+        CompoundTag rootTag = toolStack.getOrCreateTag();
+        ItemStack catalyst = ItemStack.EMPTY;
+        boolean hasSoulSand = false;
 
-            if (inputTag.contains("bladeState")) {
-                bladeStateTag = inputTag.getCompound("bladeState");
+        for (int i = 0; i < 6; i++) {
+            ItemStack stack = context.getInputStack(i);
+            if (stack == null || stack.isEmpty()) continue;
+
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+            if (id != null && id.toString().equals("minecraft:soul_sand")) {
+                hasSoulSand = true;
             }
 
-            if (bladeStateTag != null) {
-                toolStack.getOrCreateTag().put("bladeState", bladeStateTag.copy());
-                return true;
-            } else {
-                context.setErrorMsg(Component.literal("§c[Calamity] No BladeState found."));
-                return false;
+            if (stack.hasTag() && stack.getOrCreateTag().contains("embossed")) {
+                catalyst = stack;
             }
+        }
+
+        if (hasSoulSand && !catalyst.isEmpty()) {
+            return executePredation(rootTag, catalyst);
         }
         return false;
     }
 
-    /**
-     * 属性操作とSEコスト維持
-     */
+    // --- メソッド2: 刀掛台への干渉 (魂の移植) ---
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (INSTANCE == null || event.phase != TickEvent.Phase.START || event.player.level().isClientSide) return;
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        if (INSTANCE == null) return;
 
-        Player player = event.player;
-        AttributeInstance cooldownAttr = player.getAttribute(AttributeRegistry.COOLDOWN_REDUCTION.get());
+        Level level = event.getLevel();
+        Player player = event.getEntity();
+        ItemStack catalyst = event.getItemStack();
 
-        if (INSTANCE.isPlayerHoldingCalamity(player)) {
-            // --- 属性操作: クールタイム短縮を+1000% (実質10倍速＝ほぼゼロ) ---
-            if (cooldownAttr != null && cooldownAttr.getModifier(COOLDOWN_MODIFIER_UUID) == null) {
-                cooldownAttr.addTransientModifier(new AttributeModifier(COOLDOWN_MODIFIER_UUID, "Calamity Infinity Cooldown", 10.0, AttributeModifier.Operation.ADDITION));
-            }
+        if (catalyst.isEmpty() || !catalyst.hasTag() || !catalyst.getOrCreateTag().contains("embossed")) return;
 
-            // --- SEコスト補填 ---
-            if (player.experienceProgress < 0.1F && player.experienceLevel > 0) {
-                player.giveExperiencePoints(1);
-            }
-            if (player.experienceLevel < 1) {
-                player.experienceLevel = 1;
-            }
-        } else {
-            // --- Modifierを持っていない時は属性を即座に除去 ---
-            if (cooldownAttr != null && cooldownAttr.getModifier(COOLDOWN_MODIFIER_UUID) != null) {
-                cooldownAttr.removeModifier(COOLDOWN_MODIFIER_UUID);
+        if (event.getTarget() instanceof BladeStandEntity stand) {
+            ItemStack sword = stand.getItem();
+            if (sword.isEmpty()) return;
+
+            if (INSTANCE.checkStack(sword)) {
+                if (executePredation(sword.getOrCreateTag(), catalyst)) {
+                    if (!level.isClientSide) {
+                        level.playSound(null, stand.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.BLOCKS, 0.7F, 2.0F);
+                        ((ServerLevel)level).sendParticles(ParticleTypes.SOUL,
+                                stand.getX(), stand.getY() + 0.5, stand.getZ(),
+                                25, 0.1, 0.2, 0.1, 0.05);
+
+                        if (!player.getAbilities().instabuild) catalyst.shrink(1);
+                        player.displayClientMessage(Component.translatable("message.ticex_annihilation.predation_success")
+                                .withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), true);
+                    }
+                    event.setCanceled(true);
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                }
             }
         }
     }
 
-    private boolean isPlayerHoldingCalamity(Player player) {
-        return checkStack(player.getMainHandItem()) || checkStack(player.getOffhandItem());
-    }
+    private static boolean executePredation(CompoundTag rootTag, ItemStack catalyst) {
+        CompoundTag tag = catalyst.getTag();
+        if (tag == null) return false;
 
+        CompoundTag emb = tag.getCompound("embossed");
+        CompoundTag state = null;
+
+        if (emb.contains("tag") && emb.getCompound("tag").contains("bladeState")) {
+            state = emb.getCompound("tag").getCompound("bladeState");
+        } else if (emb.contains("bladeState")) {
+            state = emb.getCompound("bladeState");
+        }
+
+        if (state != null) {
+            if (!rootTag.contains("tconstruct:persistent_data")) {
+                rootTag.put("tconstruct:persistent_data", new CompoundTag());
+            }
+            rootTag.getCompound("tconstruct:persistent_data").put("slashblade:blade_state", state.copy());
+            rootTag.put("bladeState", state.copy());
+            return true;
+        }
+        return false;
+    }
     private boolean checkStack(ItemStack stack) {
-        if (stack.isEmpty()) return false;
+        if (stack == null || stack.isEmpty()) return false;
         try {
-            // TiC公式の判定に修正
             return ToolStack.from(stack).getModifierLevel(this) > 0;
         } catch (Exception e) {
             return false;

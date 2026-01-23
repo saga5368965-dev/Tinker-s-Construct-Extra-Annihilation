@@ -1,0 +1,20 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "reavaritia"
+    }
+  ],
+  "type": "tconstruct:modifier_recipe",
+  "inputs": [
+    { "item": "avaritia:infinity_ingot" },
+    { "item": "ticex_annihilation:psycho_frame" },
+    { "item": "avaritia:infinity_ingot" }
+  ],
+  "tools": { "tag": "tconstruct:modifiable" },
+  "slots": { "ability": 1 },
+  "result": {
+    "name": "ticex_annihilation:infinity_slot",
+    "level": 1
+  }
+}

@@ -2,87 +2,98 @@ package saga.ticex_annihilation.modifier;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.tconstruct.library.modifiers.Modifier;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.Comparator;
 
+/**
+ * サイコミュ・ファンネル (Forgeイベント登録方式)
+ * 外部のEventHandlerからも呼び出し可能な「強追尾」ロジックを搭載
+ */
 public class PsychoFunnelModifier extends Modifier {
 
-    /**
-     * 発射物が飛んでいる間、毎チック呼び出される処理
-     */
-    public void projectileTick(IToolStackView tool, ModifierEntry modifier, Projectile projectile, @Nullable Entity shooter, @Nullable Entity target) {
-        if (shooter instanceof LivingEntity livingShooter) {
-            executeStrongHoming(projectile, livingShooter, modifier.getLevel());
+    public PsychoFunnelModifier() {
+        super();
+        // 自身でもイベントを監視（手持ち武器の直接制御用）
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onEntityTick(net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent event) {
+        LivingEntity shooter = event.getEntity();
+        if (shooter.level().isClientSide || shooter.tickCount % 2 != 0) return;
+
+        // 手持ち武器にModifierがある場合、周囲64ブロックの自分の弾を制御
+        int level = getModifierLevel(shooter);
+        if (level > 0) {
+            controlFunnels(shooter, level);
         }
     }
 
+    private int getModifierLevel(LivingEntity entity) {
+        var stack = entity.getMainHandItem();
+        if (!stack.isEmpty()) {
+            try {
+                // IModifiableDisplayなどのチェックを含めた安全な取得
+                return ToolStack.from(stack).getModifierLevel(this);
+            } catch (Exception ignored) {}
+        }
+        return 0;
+    }
+
+    private void controlFunnels(LivingEntity shooter, int level) {
+        double controlRange = 64.0D;
+        AABB area = shooter.getBoundingBox().inflate(controlRange);
+
+        // 自分がオーナーである全てのProjectileを探して追尾実行
+        shooter.level().getEntitiesOfClass(Projectile.class, area, p -> p.getOwner() == shooter)
+                .forEach(proj -> executeStrongHoming(proj, shooter, level));
+    }
+
     /**
-     * 強力なホーミングロジック (ギュン！と曲がる処理)
+     * 強力なホーミングロジック。
+     * publicに変更したことで、128ブロック索敵用のEventHandlerからも呼び出し可能。
      */
     public void executeStrongHoming(Projectile projectile, LivingEntity shooter, int level) {
-        // クライアントサイドでは実行しない（サーバーで計算）
-        if (projectile.level().isClientSide) return;
+        // 索敵範囲もModifierレベルに応じて強化可能 (基本100 + レベル毎に加算)
+        double searchRange = 100.0D + (level * 10.0D);
+        AABB searchArea = projectile.getBoundingBox().inflate(searchRange);
 
-        // 1. ターゲット検索 (半径100マスの広域スキャン)
-        double searchRange = 100.0D;
-        AABB area = projectile.getBoundingBox().inflate(searchRange);
-
-        LivingEntity target = projectile.level().getEntitiesOfClass(LivingEntity.class, area,
+        LivingEntity target = projectile.level().getEntitiesOfClass(LivingEntity.class, searchArea,
                         e -> e != shooter && e.isAlive() && !e.isAlliedTo(shooter))
                 .stream()
                 .min(Comparator.comparingDouble(projectile::distanceToSqr))
                 .orElse(null);
 
-        // 2. ターゲットが見つかった場合の追尾処理
         if (target != null) {
             Vec3 targetPos = target.getBoundingBox().getCenter();
             Vec3 pathToTarget = targetPos.subtract(projectile.position()).normalize();
-
             Vec3 currentVelocity = projectile.getDeltaMovement();
             double speed = currentVelocity.length();
 
-            // スピードが極端に遅い場合は追尾させない
             if (speed > 0.1) {
-                // 【ギュン！ポイント】旋回性能を極限(0.98)に設定
-                // ほぼ慣性を無視してターゲットへ直進する
-                double turnSharpness = 0.98;
+                // 旋回性能（1.0に近いほど鋭い）。レベルに応じて機動性が上がる
+                double turnSharpness = Math.min(0.95 + (level * 0.01), 0.99);
+
                 Vec3 newVelocity = currentVelocity.normalize().scale(1.0 - turnSharpness)
                         .add(pathToTarget.scale(turnSharpness))
                         .normalize()
-                        .scale(speed * 1.02); // 追尾中に2%ずつ加速(絶望感の演出)
+                        .scale(speed * (1.0 + (0.02 * level))); // レベルに応じて加速
 
                 projectile.setDeltaMovement(newVelocity);
 
-                // 3. 演出面 (ニュータイプ音と白い光)
-
-                // 「ピキーン！」という覚醒音 (5チックに1回)
-                if (projectile.tickCount % 5 == 0) {
-                    projectile.level().playSound(null, projectile.getX(), projectile.getY(), projectile.getZ(),
-                            SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.5F, 2.0F);
-                }
-
-                // 「シュシュシュン」という加速音 (15チックに1回)
-                if (projectile.tickCount % 15 == 0) {
-                    projectile.level().playSound(null, projectile.getX(), projectile.getY(), projectile.getZ(),
-                            SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 0.3F, 1.8F);
-                }
-
-                // 白い光の尾 (End Rodパーティクル)
+                // パーティクル演出 (エンドロッドの光が糸を引くように追尾)
                 if (projectile.level() instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.END_ROD,
                             projectile.getX(), projectile.getY(), projectile.getZ(),
-                            1, 0, 0, 0, 0.02);
+                            1, 0, 0, 0, 0.01);
                 }
             }
         }

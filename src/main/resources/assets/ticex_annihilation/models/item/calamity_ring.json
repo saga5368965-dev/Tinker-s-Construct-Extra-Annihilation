@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ticex_annihilation:item/calamity_ring"
+  }
+}

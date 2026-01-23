@@ -1,7 +1,4 @@
 package saga.ticex_annihilation.item;
-
-import moffy.ticex.item.modifiable.ModifiableGunItem;
-import moffy.ticex.item.modifiable.ModifiableIronsSpellbookItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -11,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -24,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import saga.ticex_annihilation.entity.FunnelEntity;
 import saga.ticex_annihilation.inventory.SATCMenu;
 import saga.ticex_annihilation.registries.EntityRegistry;
+import saga.ticex_annihilation.registries.ModifierRegistry;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
@@ -43,41 +40,29 @@ public class SATCItem extends ModifiableItem {
         super(properties, toolDefinition);
     }
 
-    // --- 無限補給システム判定 ---
+    // --- 静的ユーティリティ (パケット解決用) ---
 
     /**
-     * 内部インベントリ内のアイテムが次元連結補給の対象かどうかを判定
+     * パケットクラスから呼び出される、現在有効なSATCを探すメソッド
      */
-    public boolean isExemptFromSupply(ItemStack stack) {
-        if (stack.isEmpty()) return false;
+    public static Optional<ItemStack> findActiveSATC(Player player) {
+        if (player.getMainHandItem().getItem() instanceof SATCItem) return Optional.of(player.getMainHandItem());
+        if (player.getOffhandItem().getItem() instanceof SATCItem) return Optional.of(player.getOffhandItem());
 
-        // SATC本体（自己修復）
-        if (stack.getItem() instanceof SATCItem) return true;
-
-        // TiCツールであり、かつTiCExの銃火器または魔法書であるか
-        if (stack.getItem() instanceof IModifiable) {
-            return stack.getItem() instanceof ModifiableGunItem ||
-                    stack.getItem() instanceof ModifiableIronsSpellbookItem;
-        }
-        return false;
+        return CuriosApi.getCuriosHelper().findFirstCurio(player, s -> s.getItem() instanceof SATCItem)
+                .map(slotResult -> slotResult.stack());
     }
 
-    // --- インベントリTick（メインインベントリにある時） ---
+    // --- 無限補給システム ---
 
-    @Override
-    public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
-        super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
-
-        // サーバー側で1秒(20tick)ごとに補給を実行
-        if (!level.isClientSide && player.tickCount % 20 == 0) {
-            supplyInternalWeapons(stack);
-        }
-    }
-
-    /**
-     * 内部インベントリをスキャンし、対象武器の耐久値を全回復させる（無限化）
-     */
     private void supplyInternalWeapons(ItemStack satcStack) {
+        if (!(satcStack.getItem() instanceof IModifiable)) return;
+
+        ToolStack satcTool = ToolStack.from(satcStack);
+        boolean hasEternalSupply = satcTool.getModifierLevel(ModifierRegistry.ETERNAL_SUPPLY.get()) > 0;
+
+        if (!hasEternalSupply) return;
+
         CompoundTag nbt = satcStack.getOrCreateTag();
         if (!nbt.contains("Inventory")) return;
 
@@ -87,73 +72,54 @@ public class SATCItem extends ModifiableItem {
         boolean changed = false;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack weapon = handler.getStackInSlot(i);
-            if (isExemptFromSupply(weapon)) {
+            if (!weapon.isEmpty()) {
                 if (weapon.isDamaged()) {
-                    weapon.setDamageValue(0); // 耐久値を最大まで復元
+                    weapon.setDamageValue(0);
                     changed = true;
                 }
             }
         }
+
         if (changed) {
             nbt.put("Inventory", handler.serializeNBT());
         }
     }
 
-    // --- 通信・検索ロジック ---
+    // --- Tick 処理 ---
 
-    public static void handlePacket(Player player, int type) {
-        findActiveSATC(player).ifPresent(stack -> {
-            if (stack.getItem() instanceof SATCItem item) {
-                if (type == 0) item.toggleFunnels(stack, player);
-                else if (type == 1) item.cycleMode(stack, player);
+    @Override
+    public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
+        super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
+        if (!level.isClientSide && player.tickCount % 20 == 0) {
+            supplyInternalWeapons(stack);
+        }
+    }
+
+    @Override
+    public @Nullable ICapabilityProvider initCapabilities(@NotNull ItemStack stack, @Nullable CompoundTag nbt) {
+        return CuriosApi.createCurioProvider(new ICurio() {
+            @Override public ItemStack getStack() { return stack; }
+            @Override
+            public void curioTick(SlotContext slotContext) {
+                if (!slotContext.entity().level().isClientSide && slotContext.entity().tickCount % 20 == 0) {
+                    supplyInternalWeapons(stack);
+                }
+            }
+            @Override
+            public void onUnequip(SlotContext slotContext, ItemStack newStack) {
+                if (slotContext.entity() instanceof Player player) recallAllFunnels(player);
             }
         });
     }
 
-    public static Optional<ItemStack> findActiveSATC(Player player) {
-        if (player.getMainHandItem().getItem() instanceof SATCItem) return Optional.of(player.getMainHandItem());
-        if (player.getOffhandItem().getItem() instanceof SATCItem) return Optional.of(player.getOffhandItem());
-
-        return CuriosApi.getCuriosHelper().findFirstCurio(player, s -> s.getItem() instanceof SATCItem)
-                .map(slotResult -> slotResult.stack());
-    }
-
-    // --- 右クリック挙動 ---
-
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide()) return InteractionResultHolder.success(stack);
-
-        if (player instanceof ServerPlayer serverPlayer) {
-            if (player.isShiftKeyDown()) {
-                openInterface(serverPlayer, stack);
-            } else {
-                toggleFunnels(stack, player);
-            }
-        }
-        return InteractionResultHolder.consume(stack);
-    }
-
-    public void openInterface(ServerPlayer player, ItemStack stack) {
-        NetworkHooks.openScreen(player, new SimpleMenuProvider(
-                (id, inv, p) -> new SATCMenu(id, inv, stack),
-                Component.translatable("gui.ticex_annihilation.satc_title")
-        ), buf -> buf.writeItem(stack));
-    }
-
-    // --- ファンネル制御ロジック ---
+    // --- 制御ロジック (パケット経由で実行) ---
 
     public void toggleFunnels(ItemStack stack, Player player) {
-        if (!(stack.getItem() instanceof IModifiable)) return;
         ToolStack tool = ToolStack.from(stack);
         boolean isActive = tool.getPersistentData().getBoolean(ACTIVE_KEY);
 
         if (!isActive) {
-            if (isInventoryEmpty(stack)) {
-                player.displayClientMessage(Component.translatable("chat.ticex_annihilation.no_weapons").withStyle(ChatFormatting.RED), true);
-                return;
-            }
+            if (isInventoryEmpty(stack)) return;
             deployFunnels(stack, player);
             tool.getPersistentData().putBoolean(ACTIVE_KEY, true);
             player.displayClientMessage(Component.translatable("message.ticex_annihilation.deploy").withStyle(ChatFormatting.AQUA), true);
@@ -163,6 +129,20 @@ public class SATCItem extends ModifiableItem {
             player.displayClientMessage(Component.translatable("message.ticex_annihilation.recall").withStyle(ChatFormatting.GRAY), true);
         }
     }
+
+    public void cycleMode(ItemStack stack, Player player) {
+        ToolStack tool = ToolStack.from(stack);
+        int currentMode = tool.getPersistentData().getInt(MODE_KEY);
+        int nextMode = (currentMode + 1) % 3; // 0, 1, 2 の3モード想定
+        tool.getPersistentData().putInt(MODE_KEY, nextMode);
+
+        player.displayClientMessage(
+                Component.translatable("message.ticex_annihilation.mode." + nextMode).withStyle(ChatFormatting.GOLD),
+                true
+        );
+    }
+
+    // --- 内部処理 ---
 
     private void deployFunnels(ItemStack stack, Player player) {
         CompoundTag nbt = stack.getOrCreateTag();
@@ -180,7 +160,7 @@ public class SATCItem extends ModifiableItem {
                 funnel.setOwner(player);
                 funnel.setFunnelIndex(i);
                 funnel.setStoredItem(weapon.copy());
-                funnel.setPos(player.getX(), player.getEyeY() + 0.5, player.getZ());
+                funnel.setPos(player.getX(), player.getEyeY(), player.getZ());
                 player.level().addFreshEntity(funnel);
             }
         }
@@ -207,45 +187,19 @@ public class SATCItem extends ModifiableItem {
         return true;
     }
 
-    public void cycleMode(ItemStack stack, Player player) {
-        if (!(stack.getItem() instanceof IModifiable)) return;
-        ToolStack tool = ToolStack.from(stack);
-        int currentMode = tool.getPersistentData().getInt(MODE_KEY);
-        int nextMode = (currentMode + 1) % 3;
-        tool.getPersistentData().putInt(MODE_KEY, nextMode);
-
-        player.displayClientMessage(
-                Component.translatable("message.ticex_annihilation.system_prefix")
-                        .append(Component.translatable("message.ticex_annihilation.mode." + nextMode)),
-                true
-        );
-    }
-
-    // --- Curios 連携 (装備中も無限補給を維持) ---
-
     @Override
-    public @Nullable ICapabilityProvider initCapabilities(@NotNull ItemStack stack, @Nullable CompoundTag nbt) {
-        return CuriosApi.createCurioProvider(new ICurio() {
-            @Override public ItemStack getStack() { return stack; }
-
-            @Override
-            public void curioTick(SlotContext slotContext) {
-                LivingEntity entity = slotContext.entity();
-                if (!entity.level().isClientSide && entity.tickCount % 20 == 0) {
-                    supplyInternalWeapons(stack);
-                }
-            }
-
-            @Override
-            public void onUnequip(SlotContext slotContext, ItemStack newStack) {
-                if (slotContext.entity() instanceof Player player) {
-                    recallAllFunnels(player);
-                    if (stack.getItem() instanceof IModifiable) {
-                        ToolStack.from(stack).getPersistentData().putBoolean(ACTIVE_KEY, false);
-                    }
-                }
-            }
-        });
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (level.isClientSide()) return InteractionResultHolder.success(stack);
+        if (player.isShiftKeyDown()) {
+            NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+                    (id, inv, p) -> new SATCMenu(id, inv, stack),
+                    Component.translatable("gui.ticex_annihilation.satc_title")
+            ), buf -> buf.writeItem(stack));
+        } else {
+            toggleFunnels(stack, player);
+        }
+        return InteractionResultHolder.consume(stack);
     }
 
     @Override public @NotNull Rarity getRarity(@NotNull ItemStack stack) { return Rarity.EPIC; }

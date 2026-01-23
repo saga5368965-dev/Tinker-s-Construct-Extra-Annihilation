@@ -15,8 +15,6 @@ public class EventRegistry {
         MinecraftForge.EVENT_BUS.register(PsychoShardEventHandler.class);
 
         // 2. サイコファンネル（追尾・白い輝き）
-        // ※もしファンネル側でも @SubscribeEvent を使うようになった場合、ここに追加。
-        // 現在はModifierから静的メソッドを呼ぶ形なので、念のため登録。
         MinecraftForge.EVENT_BUS.register(PsychoFunnelEventHandler.class);
 
         // 他にイベントクラスが増えたらここに追記していく

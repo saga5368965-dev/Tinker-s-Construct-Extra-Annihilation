@@ -1,0 +1,14 @@
+{
+  "type": "tconstruct:modifier_recipe",
+  "inputs": [
+    { "item": "irons_spellbooks:cooldown_upgrade_orb" },
+    { "item": "ticex_annihilation:psycho_frame" },
+    { "item": "irons_spellbooks:cooldown_upgrade_orb" }
+  ],
+  "tools": { "tag": "tconstruct:modifiable" },
+  "slots": { "ability": 1 },
+  "result": {
+    "name": "ticex_annihilation:instant_cast",
+    "level": 1
+  }
+}

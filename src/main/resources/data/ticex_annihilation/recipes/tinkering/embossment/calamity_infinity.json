@@ -1,0 +1,8 @@
+{
+  "type": "ticex:embossment",
+  "modifier": "saga_ticex_annihilation:calamity_infinity",
+  "items": {
+    "tag": "ticex:koshirae_catalysts"
+  },
+  "result": "saga_ticex_annihilation:calamity_infinity"
+}

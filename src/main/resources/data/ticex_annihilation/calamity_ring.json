@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CSC",
+    "SNS",
+    "CSC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "tconstruct:cinderslime_block"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "item": "ticex_annihilation:calamity_ring",
+    "count": 1
+  }
+}
